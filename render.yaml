@@ -2,9 +2,8 @@ services:
   - type: web
     name: mern-crud-backend
     env: node
-    buildCommand: cd ../client && npm install && VITE_API_BASE_URL=/api npm run build && cd ../server && npm install
-    startCommand: npm start
-    rootDir: server
+    buildCommand: cd server && npm install && cd ../client && npm install && VITE_API_BASE_URL=/api npm run build
+    startCommand: cd server && node server.js
     envVars:
       - key: MONGO_URL
         value: mongodb+srv://madhugullipalli_db_user:2005@cluster0.ce9t9cg.mongodb.net/bookdb?retryWrites=true&w=majority&appName=Cluster0
@@ -12,3 +11,4 @@ services:
         value: 8800
       - key: JWT_SECRET
         value: any-random-long-string-here
+
