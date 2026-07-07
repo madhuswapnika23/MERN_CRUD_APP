@@ -26,6 +26,9 @@ const dotenv = require("dotenv");
 // Import CORS to allow frontend applications (React) to access backend APIs
 const cors = require("cors");
 
+// Import path module to handle file paths
+const path = require("path");
+
 // Load all environment variables defined in the .env file into process.env
 dotenv.config();
 
@@ -52,10 +55,6 @@ app.use(
 // Required to read data sent in POST / PUT requests
 app.use(express.json());
 
-// ROOT ROUTE
-app.get("/",(req,res) => {
-  res.send("API Running Successfully");
-});
 
 // --------------------------------------------------
 // ROUTE REGISTRATION
@@ -85,6 +84,22 @@ app.use("/api/auth", authRoutes);
 // PUT    /api/books/:id
 // DELETE /api/books/:id
 app.use("/api/books", bookRoutes);
+
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+// Catch-all route to serve the React app's index.html
+app.get(/(.*)/, (req, res, next) => {
+  // If the path looks like an API route but is unmatched, return a 404
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ message: "API route not found" });
+  }
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"), (err) => {
+    if (err) {
+      res.status(500).send("Frontend build not found. Please build the client project first.");
+    }
+  });
+});
 
 // --------------------------------------------------
 // DATABASE CONNECTION
